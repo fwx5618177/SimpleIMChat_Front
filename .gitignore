@@ -27,3 +27,6 @@ dist-ssr
 # cache
 .eslintcache
 .stylelintcache
+
+# test suit
+coverage/
