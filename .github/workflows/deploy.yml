@@ -1,0 +1,26 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Moxi Note
+
+# 触发条件修改为：当master分支，有push的时候，执行任务
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+   build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # 拉取代码
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build key
+        env:
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+        run: echo "$SERVER_SSH_KEY" | tee -a ./deploy_key
+      - name: list
+        run: ls -al && pwd && chmod 400 deploy_key
+      - name: deploy
+        run: rsync -avzI --delete ./build/ ${{secrets.REMOTE_USER}}@${{ secrets.REMOTE_HOST }}:/root/md.moxixii/ --rsh "ssh -p 22 -i ./deploy_key -o StrictHostKeyChecking=no"
