@@ -21,8 +21,7 @@ export default () => {
     return (
         <Layout>
             <Header />
-
-            <Content
+            {/* <Content
                 style={{
                     marginTop: 0,
                     padding: 0,
@@ -33,7 +32,7 @@ export default () => {
                     <Side />
                     <Content style={{ padding: '0 24px', minHeight: 680 }}>Content</Content>
                 </Layout>
-            </Content>
+            </Content> */}
         </Layout>
     )
 }
