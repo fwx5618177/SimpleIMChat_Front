@@ -1,37 +1,40 @@
-import React from 'react'
-import { AppstoreOutlined, BarChartOutlined, CloudOutlined, ShopOutlined, TeamOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons'
-import { Layout, Menu } from 'antd'
-import type { MenuProps } from 'antd'
+import * as React from 'react'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import Avatar from '@mui/material/Avatar'
+import ImageIcon from '@mui/icons-material/Image'
+import WorkIcon from '@mui/icons-material/Work'
+import BeachAccessIcon from '@mui/icons-material/BeachAccess'
 
-const { Sider } = Layout
-
-const items: MenuProps['items'] = [UserOutlined, VideoCameraOutlined, UploadOutlined, BarChartOutlined, CloudOutlined, AppstoreOutlined, TeamOutlined, ShopOutlined].map((icon, index) => ({
-    key: String(index + 1),
-    icon: React.createElement(icon),
-    label: `nav ${index + 1}`,
-}))
-
-export default () => (
-    // <Sider
-    //     style={{
-    //         overflow: 'auto',
-    //         height: '100vh',
-    //         position: 'fixed',
-    //         left: 0,
-    //         top: 0,
-    //         bottom: 0,
-    //     }}
-    // >
-    //     <Menu theme='dark' mode='inline' defaultSelectedKeys={['4']} items={items} />
-    // </Sider>
-    <Sider
-        style={{
-            left: 0,
-            top: 0,
-        }}
-        className='site-layout-background'
-        width={300}
-    >
-        <Menu mode='inline' defaultSelectedKeys={['1']} defaultOpenKeys={['sub1']} style={{ height: '100%' }} items={items} />
-    </Sider>
-)
+export default () => {
+    return (
+        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', height: '96vh' }}>
+            <ListItem>
+                <ListItemAvatar>
+                    <Avatar>
+                        <ImageIcon />
+                    </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary='Photos' secondary='Jan 9, 2014' />
+            </ListItem>
+            <ListItem>
+                <ListItemAvatar>
+                    <Avatar>
+                        <WorkIcon />
+                    </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary='Work' secondary='Jan 7, 2014' />
+            </ListItem>
+            <ListItem>
+                <ListItemAvatar>
+                    <Avatar>
+                        <BeachAccessIcon />
+                    </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary='Vacation' secondary='July 20, 2014' />
+            </ListItem>
+        </List>
+    )
+}

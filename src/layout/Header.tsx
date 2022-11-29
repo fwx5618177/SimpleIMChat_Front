@@ -15,16 +15,6 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import LanguageIcon from '@mui/icons-material/Language'
 import MenuItem from '@mui/material/MenuItem'
 import Menu from '@mui/material/Menu'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-
-const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-        primary: {
-            main: '#1976d2',
-        },
-    },
-})
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -112,44 +102,44 @@ export default () => {
     )
 
     return (
-        <ThemeProvider theme={darkTheme}>
-            <Box
-                sx={{
-                    flexGrow: 1,
-                }}
-            >
-                <AppBar position='static'>
-                    <Toolbar>
-                        <IconButton size='large' edge='start' color='inherit' aria-label='open drawer' sx={{ mr: 2 }}>
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography variant='h6' noWrap component='div' sx={{ display: { xs: 'none', sm: 'block' } }}>
-                            Gradual Community
-                        </Typography>
-                        <Box sx={{ flexGrow: 1 }} />
-                        <Box
-                            sx={{
-                                display: {
-                                    xs: 'none',
-                                    md: 'flex',
-                                },
-                            }}
-                        >
-                            <Search>
-                                <SearchIconWrapper>
-                                    <SearchIcon />
-                                </SearchIconWrapper>
-                                <StyledInputBase placeholder='Search…' inputProps={{ 'aria-label': 'search' }} />
-                            </Search>
+        <Box
+            sx={{
+                flexGrow: 1,
+            }}
+        >
+            <AppBar position='static'>
+                <Toolbar>
+                    <IconButton size='large' edge='start' color='inherit' aria-label='open drawer' sx={{ mr: 2 }}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant='h6' noWrap component='div' sx={{ display: { xs: 'none', sm: 'block' } }}>
+                        Gradual Community
+                    </Typography>
+                    <Box sx={{ flexGrow: 1 }} />
+                    <Box
+                        sx={{
+                            display: {
+                                xs: 'none',
+                                md: 'flex',
+                            },
+                        }}
+                    >
+                        <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase placeholder='Search…' inputProps={{ 'aria-label': 'search' }} />
+                        </Search>
 
-                            <IconButton size='large' edge='start' color='inherit' aria-label='open drawer' sx={{ mr: 2 }}>
-                                <LanguageIcon />
-                            </IconButton>
+                        <IconButton size='large' edge='start' color='inherit' aria-label='open drawer' sx={{ mr: 2 }}>
+                            <LanguageIcon />
                             <Typography
-                                style={{
-                                    marginLeft: -20,
-                                    padding: '10px 0 0 0',
-                                }}
+                                style={
+                                    {
+                                        // marginLeft: -20,
+                                        // padding: '8px 0 0 0',
+                                    }
+                                }
                                 variant='subtitle1'
                                 noWrap
                                 component='div'
@@ -159,27 +149,27 @@ export default () => {
                                 {'  '}
                                 {Intl.DateTimeFormat().resolvedOptions().timeZone}
                             </Typography>
+                        </IconButton>
 
-                            <IconButton size='large' aria-label='show 17 new notifications' color='inherit'>
-                                <Badge badgeContent={0} color='error'>
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
+                        <IconButton size='large' aria-label='show 17 new notifications' color='inherit'>
+                            <Badge badgeContent={0} color='error'>
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
 
-                            <IconButton size='large' aria-label='show 4 new mails' color='inherit'>
-                                <Badge badgeContent={0} color='error'>
-                                    <HelpOutlineIcon />
-                                </Badge>
-                            </IconButton>
+                        <IconButton size='large' aria-label='show 4 new mails' color='inherit'>
+                            <Badge badgeContent={0} color='error'>
+                                <HelpOutlineIcon />
+                            </Badge>
+                        </IconButton>
 
-                            <IconButton size='large' edge='end' aria-label='account of current user' aria-controls={menuId} aria-haspopup='true' onClick={handleProfileMenuOpen} color='inherit'>
-                                <AccountCircle />
-                            </IconButton>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-                {renderMenu}
-            </Box>
-        </ThemeProvider>
+                        <IconButton size='large' edge='end' aria-label='account of current user' aria-controls={menuId} aria-haspopup='true' onClick={handleProfileMenuOpen} color='inherit'>
+                            <AccountCircle />
+                        </IconButton>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            {renderMenu}
+        </Box>
     )
 }

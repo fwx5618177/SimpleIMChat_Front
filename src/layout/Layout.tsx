@@ -1,38 +1,31 @@
-import { Layout } from 'antd'
+import { Divider, Stack } from '@mui/material'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import Content from './Content'
 // import Content from './Content'
 import Footer from './Footer'
 import Header from './header'
 import Side from './Side'
 
-const { Content } = Layout
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        primary: {
+            main: '#1976d2',
+        },
+    },
+})
 
 export default () => {
-    // return (
-    //     <Layout hasSider>
-    //         <Side />
-    //         <Layout className='site-layout' style={{ marginLeft: 200 }}>
-    //             <Header />
-    //             <Content />
-    //             <Footer />
-    //         </Layout>
-    //     </Layout>
-    // )
-
     return (
-        <Layout>
-            <Header />
-            {/* <Content
-                style={{
-                    marginTop: 0,
-                    padding: 0,
-                    height: '100vh',
-                }}
-            >
-                <Layout className='site-layout-background' style={{ padding: 0, height: '94vh' }}>
+        <>
+            <ThemeProvider theme={darkTheme}>
+                <Header />
+                <Stack direction={'row'} spacing={0}>
                     <Side />
-                    <Content style={{ padding: '0 24px', minHeight: 680 }}>Content</Content>
-                </Layout>
-            </Content> */}
-        </Layout>
+                    <Content />
+                </Stack>
+                {/* <Footer /> */}
+            </ThemeProvider>
+        </>
     )
 }
