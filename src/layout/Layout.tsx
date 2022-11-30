@@ -1,9 +1,9 @@
-import { Divider, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import Content from './Content'
 // import Content from './Content'
 import Footer from './Footer'
-import Header from './header'
+import Header from './Header'
 import Side from './Side'
 
 const darkTheme = createTheme({
