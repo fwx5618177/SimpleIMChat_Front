@@ -25,3 +25,7 @@
     max-height: 100vh;
     overflow: hidden;
 }
+
+.Mui-selected {
+    background-color: #393746 !important;
+}

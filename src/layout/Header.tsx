@@ -106,9 +106,16 @@ export default () => {
             sx={{
                 flexGrow: 1,
             }}
+            style={{
+                backgroundColor: '#0C0E13',
+            }}
         >
             <AppBar position='static'>
-                <Toolbar>
+                <Toolbar
+                    style={{
+                        backgroundColor: '#0C0E13',
+                    }}
+                >
                     <IconButton size='large' edge='start' color='inherit' aria-label='open drawer' sx={{ mr: 2 }}>
                         <MenuIcon />
                     </IconButton>

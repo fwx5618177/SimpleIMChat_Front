@@ -1,4 +1,4 @@
-import { Stack, Box, Divider, List, ListItem, ListItemAvatar, Avatar, ListItemText } from '@mui/material'
+import { Stack, Box, Divider, List, ListItem, ListItemAvatar, Avatar, ListItemText, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { styled, alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -6,7 +6,7 @@ import GroupIcon from '@mui/icons-material/Group'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import IconButton from '@mui/material/IconButton'
-
+import { TransitionProps } from '@mui/material/transitions'
 import FormatBoldIcon from '@mui/icons-material/FormatBold'
 import FormatItalicIcon from '@mui/icons-material/FormatItalic'
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined'
@@ -14,7 +14,7 @@ import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-
+import Slide from '@mui/material/Slide'
 import content from '../mock/chatContent.json'
 
 interface ChatContainerProps {
@@ -57,6 +57,27 @@ const EditeContainer = styled(Box)(({ theme }) => ({
     paddingLeft: 10,
     width: '100%',
     padding: theme.spacing(0, 0, 0, 0),
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: 0,
+        width: '100%',
+    },
+}))
+
+const EditeText = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    width: '100%',
+    height: 140,
+    overflow: 'scroll',
+    padding: theme.spacing(1, 1, 1, 2),
+    outline: 'none',
+    fontFamily: 'Inter',
+    fontStyle: 'normal',
+    fontWeight: 500,
+    fontSize: 15,
+    lineHeight: '160%',
+    color: '#fff',
+    letterSpacing: 1.5,
     [theme.breakpoints.up('sm')]: {
         marginLeft: 0,
         width: '100%',
@@ -108,6 +129,26 @@ const ChatWordContainer = styled(Box)(({ theme }) => ({
     },
 }))
 
+const SelfChatWordContainer = styled(Box)(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    background: 'linear-gradient(0deg, rgba(4, 177, 125, 0.5), rgba(4, 177, 125, 0.5)), #FFFFFF',
+    padding: theme.spacing(0, 1.5, 0, 2),
+    color: 'black',
+    minHeight: 60,
+    height: 'atuo',
+    wordBreak: 'break-word',
+    overflowWrap: 'normal',
+    letterSpacing: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    cursor: 'pointer',
+    // '&:hover': {
+    //     backgroundColor: alpha(theme.palette.common.white, 0.25),
+    // },
+}))
+
 const ChatOpsPlugins = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -124,14 +165,82 @@ const ChatOpsPlugins = styled('div')(({ theme }) => ({
     cursor: 'pointer',
 }))
 
+const ReplyMention = styled(Box)(({ theme }) => ({
+    position: 'relative',
+    borderRadius: 8,
+    backgroundColor: '#35343E',
+    padding: theme.spacing(0, 1.5, 0, 2),
+    color: '#7B798F',
+    margin: theme.spacing(1, 0, 1, 0),
+    maxWidth: '349px',
+    height: '41px',
+    wordBreak: 'break-word',
+    overflowWrap: 'normal',
+    letterSpacing: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    cursor: 'pointer',
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+}))
+
+const ReplyMark = styled('div')(() => ({
+    width: 2,
+    height: 20,
+    background: '#04B17D',
+    borderRadius: 100,
+}))
+
+const ReplyFont = styled('div')(() => ({
+    width: 317,
+    height: 21,
+    fontFamily: 'Inter',
+    fontStyle: 'normal',
+    fontWeight: 500,
+    fontSize: 13,
+    lineHeight: '160%',
+    alignItems: 'center',
+    color: '#7B798F',
+    marginLeft: 10,
+    marginRight: 10,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+}))
+
+const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>
+    },
+    ref: React.Ref<unknown>,
+) {
+    return <Slide direction='up' ref={ref} {...props} />
+})
+
 export default ({ chatId }: ChatContainerProps) => {
+    const [currentRoleName, setCurrentRoleName] = useState<string>('Jenny White')
     const [contentHistory, setContentHistory] = useState<any>(null)
     const [chatLists, setChatLists] = useState<any[]>([])
     const [chatHeader, setChatHeader] = useState<string>('')
+    const [openDialog, setOpenDialog] = React.useState(false)
     const [formats, setFormats] = React.useState(() => ['bold', 'italic'])
 
-    const handleFormat = (event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
+    const handleFormat = (_event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
         setFormats(newFormats)
+    }
+
+    const handleDelete = () => {
+        setOpenDialog(true)
+    }
+
+    const handleQuote = (...args) => {
+        console.log('quote:', args)
+    }
+
+    const handleClose = () => {
+        setOpenDialog(false)
     }
 
     const queryHistory = async () => {
@@ -193,48 +302,117 @@ export default ({ chatId }: ChatContainerProps) => {
                     />
                     <ChatContentBox>
                         <List>
-                            <Stack direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
-                                <ListItem
-                                    sx={{
-                                        width: '55%',
-                                    }}
-                                >
-                                    <ListItemAvatar>
-                                        <Avatar alt='Devon' src='xxx' />
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={
-                                            <Stack direction={'row'} justifyContent={'flex-start'}>
-                                                <Typography variant='subtitle1' noWrap component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
-                                                    Devon Lane
-                                                </Typography>
+                            {chatLists?.map((ci, index) => (
+                                <>
+                                    {ci?.name === currentRoleName ? (
+                                        <Stack key={index} direction={'row-reverse'} justifyContent={'flex-start'} alignItems={'center'}>
+                                            <ListItem
+                                                sx={{
+                                                    width: '55%',
+                                                }}
+                                            >
+                                                <ListItemText
+                                                    style={{
+                                                        marginRight: 15,
+                                                    }}
+                                                    primary={
+                                                        <Stack direction={'row'} justifyContent={'flex-end'}>
+                                                            <Typography variant='subtitle1' noWrap component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                                                {ci?.name}
+                                                            </Typography>
 
-                                                <Typography variant='subtitle1' noWrap component='div' sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 5, color: '#bdb8b8' }}>
-                                                    20:34
-                                                </Typography>
-                                            </Stack>
-                                        }
-                                        secondary={
-                                            <ChatWordContainer>
-                                                <Stack direction={'row'} justifyContent={'flex-start'}>
-                                                    <Typography variant='subtitle1' component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
-                                                        Checkout
-                                                    </Typography>
-                                                </Stack>
-                                            </ChatWordContainer>
-                                        }
-                                    />
-                                </ListItem>
+                                                            <Typography variant='subtitle1' noWrap component='div' sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 5, color: '#bdb8b8' }}>
+                                                                {ci?.sendTime}
+                                                            </Typography>
+                                                        </Stack>
+                                                    }
+                                                    secondary={
+                                                        <>
+                                                            <SelfChatWordContainer>
+                                                                <Stack direction={'row'} justifyContent={'flex-start'}>
+                                                                    <Typography variant='subtitle1' component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                                                        {ci?.content}
+                                                                    </Typography>
+                                                                </Stack>
+                                                            </SelfChatWordContainer>
+                                                            {!ci?.reply?.mentionId ? null : (
+                                                                <ReplyMention>
+                                                                    <ReplyMark />
+                                                                    <ReplyFont>{chatLists?.find(vi => vi?.sendId === ci?.reply?.mentionId)?.content}</ReplyFont>
+                                                                </ReplyMention>
+                                                            )}
+                                                        </>
+                                                    }
+                                                />
 
-                                <ChatOpsPlugins>
-                                    <IconButton size='small' edge='start' color='inherit' aria-label='open drawer'>
-                                        <FormatQuoteIcon />
-                                    </IconButton>
-                                    <IconButton size='small' edge='start' color='inherit' aria-label='open drawer'>
-                                        <DeleteForeverIcon />
-                                    </IconButton>
-                                </ChatOpsPlugins>
-                            </Stack>
+                                                <ListItemAvatar>
+                                                    <Avatar alt='Devon' src='xxx' />
+                                                </ListItemAvatar>
+                                            </ListItem>
+
+                                            <ChatOpsPlugins>
+                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={_e => handleQuote(ci?.sendId)}>
+                                                    <FormatQuoteIcon />
+                                                </IconButton>
+                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={handleDelete}>
+                                                    <DeleteForeverIcon />
+                                                </IconButton>
+                                            </ChatOpsPlugins>
+                                        </Stack>
+                                    ) : (
+                                        <Stack key={index} direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
+                                            <ListItem
+                                                sx={{
+                                                    width: '55%',
+                                                }}
+                                            >
+                                                <ListItemAvatar>
+                                                    <Avatar alt='Devon' src='xxx' />
+                                                </ListItemAvatar>
+                                                <ListItemText
+                                                    primary={
+                                                        <Stack direction={'row'} justifyContent={'flex-start'}>
+                                                            <Typography variant='subtitle1' noWrap component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                                                {ci?.name}
+                                                            </Typography>
+
+                                                            <Typography variant='subtitle1' noWrap component='div' sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 5, color: '#bdb8b8' }}>
+                                                                {ci?.sendTime}
+                                                            </Typography>
+                                                        </Stack>
+                                                    }
+                                                    secondary={
+                                                        <>
+                                                            <ChatWordContainer>
+                                                                <Stack direction={'row'} justifyContent={'flex-start'}>
+                                                                    <Typography variant='subtitle1' component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                                                        {ci?.content}
+                                                                    </Typography>
+                                                                </Stack>
+                                                            </ChatWordContainer>
+                                                            {!ci?.reply?.mentionId ? null : (
+                                                                <ReplyMention>
+                                                                    <ReplyMark />
+                                                                    <ReplyFont>{chatLists?.find(vi => vi?.sendId === ci?.reply?.mentionId)?.content}</ReplyFont>
+                                                                </ReplyMention>
+                                                            )}
+                                                        </>
+                                                    }
+                                                />
+                                            </ListItem>
+
+                                            <ChatOpsPlugins>
+                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={_e => handleQuote(ci?.sendId)}>
+                                                    <FormatQuoteIcon />
+                                                </IconButton>
+                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={handleDelete}>
+                                                    <DeleteForeverIcon />
+                                                </IconButton>
+                                            </ChatOpsPlugins>
+                                        </Stack>
+                                    )}
+                                </>
+                            ))}
                         </List>
                     </ChatContentBox>
 
@@ -258,15 +436,27 @@ export default ({ chatId }: ChatContainerProps) => {
                                 <ToggleButton value='underlined' aria-label='underlined'>
                                     <FormatUnderlinedIcon />
                                 </ToggleButton>
-                                <ToggleButton value='color' aria-label='color' disabled>
+
+                                <ToggleButton value='color' aria-label='color'>
                                     <FormatColorFillIcon />
                                     <ArrowDropDownIcon />
                                 </ToggleButton>
                             </ToggleButtonGroup>
 
-                            <div>1</div>
+                            <EditeText contentEditable />
                         </Stack>
                     </EditeContainer>
+                    <Dialog open={openDialog} TransitionComponent={Transition} keepMounted onClose={handleClose} aria-describedby='alert-dialog-slide-description'>
+                        <DialogTitle>{'Do you want to delete it?'}</DialogTitle>
+                        <DialogActions>
+                            <Button color='success' onClick={handleClose}>
+                                Disagree
+                            </Button>
+                            <Button color='error' onClick={handleClose}>
+                                Agree
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Stack>
             )}
         </>

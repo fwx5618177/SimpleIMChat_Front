@@ -24,13 +24,13 @@ const BoxContainer = styled(Box)(({ theme }) => ({
 const ChatListContainer = styled(Box)(({ theme }) => ({
     height: '90vh',
     width: '25%',
-    backgroundColor: '#212121',
+    backgroundColor: '#1D1C21',
 }))
 
 const ChatContainer = styled(Box)(({ theme }) => ({
     height: '90vh',
     width: '100%',
-    backgroundColor: '#222034',
+    backgroundColor: '#26252D',
     // padding: theme.spacing(1, 1, 1, 0),
 }))
 
@@ -72,6 +72,8 @@ export default (_props: any) => {
     const [searchList, setSearchList] = React.useState<SearchListProps[]>([])
 
     const handleListItemClick = (_event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
+        // console.log('index:', index, selectedIndex, selectedIndex === index)
+
         setSelectedIndex(index)
     }
 
@@ -131,7 +133,13 @@ export default (_props: any) => {
                                 }}
                             >
                                 {performanceList?.map((ci, index) => (
-                                    <ListItem key={index}>
+                                    <ListItem
+                                        key={index}
+                                        style={{
+                                            paddingLeft: 0,
+                                            paddingRight: 0,
+                                        }}
+                                    >
                                         <ListItemButton selected={selectedIndex === ci?.chatId} onClick={event => handleListItemClick(event, ci?.chatId)}>
                                             <ListItemAvatar>
                                                 <Badge badgeContent={ci?.unread} color='error'>
