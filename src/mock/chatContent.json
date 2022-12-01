@@ -1,0 +1,46 @@
+[
+    {
+        "id": 1,
+        "chatId": 121,
+        "createdTime": "02:30",
+        "lastTime": "20:34",
+        "mode": "Group",
+        "chatName": "Share Your Story", 
+        "joiner": {
+            "names": [
+                "Devon Lane",
+                "Jenny White"
+            ],
+            "members": 4
+        },
+        "content": [
+            {
+                "sendId": 12101,
+                "name": "Jenny White",
+                "sendTime": "02:30",
+                "content": "If you want to learn from community builders & spur ideas from how others run virtual events, check out Vanilla Forums(11/17 - 11/18/20) for free.",
+                "reply": {
+                    "mentionId": 0
+                }
+            },
+            {
+                "sendId": 12102,
+                "name": "Devon Lane",
+                "sendTime": "20:31",
+                "content": "Check out Vanilla Forums(11/17 - 11/18/20) for free.",
+                "reply": {
+                    "mentionId": 0
+                }
+            },
+            {
+                "sendId": 12103,
+                "name": "Jenny White",
+                "sendTime": "20:32",
+                "content": "Many Thanks!",
+                "reply": {
+                    "mentionId": 12102
+                }
+            }
+        ]
+    }
+]

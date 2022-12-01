@@ -1,5 +1,7 @@
 export const mockData = [
     {
+        id: 1,
+        chatId: 120,
         pic: 'xxxx',
         description: 'Announcements',
         primary: 'Announcements',
@@ -8,6 +10,8 @@ export const mockData = [
         unread: 3,
     },
     {
+        id: 2,
+        chatId: 121,
         pic: 'xxx',
         description: 'story',
         primary: 'Share your story',
@@ -16,6 +20,8 @@ export const mockData = [
         unread: 6,
     },
     {
+        id: 3,
+        chatId: 122,
         pic: 'xxxx',
         description: 'General',
         primary: 'General',
@@ -24,6 +30,8 @@ export const mockData = [
         unread: 0,
     },
     {
+        id: 4,
+        chatId: 123,
         pic: 'xxxx',
         description: 'Courtney Henry',
         primary: 'Courtney Henry',
@@ -32,6 +40,8 @@ export const mockData = [
         unread: 0,
     },
     {
+        id: 5,
+        chatId: 124,
         pic: 'xxxx',
         description: 'Albert Flores',
         primary: 'Albert Flores',
@@ -40,6 +50,8 @@ export const mockData = [
         unread: 0,
     },
     {
+        id: 6,
+        chatId: 125,
         pic: 'xxxx',
         description: 'Darlene Robertson',
         primary: 'Darlene Robertson',
@@ -48,6 +60,8 @@ export const mockData = [
         unread: 0,
     },
     {
+        id: 7,
+        chatId: 126,
         pic: 'xxxx',
         description: 'Design product',
         primary: 'Design product',
@@ -56,6 +70,8 @@ export const mockData = [
         unread: 0,
     },
     {
+        id: 8,
+        chatId: 127,
         pic: 'xxxx',
         description: 'Product team',
         primary: 'Product team',

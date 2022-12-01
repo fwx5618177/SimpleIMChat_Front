@@ -9,9 +9,7 @@ import 'antd/dist/reset.css'
 // import 'lib-flexible'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <React.StrictMode>
-        <ConfigProvider locale={zhCN}>
-            <App />
-        </ConfigProvider>
-    </React.StrictMode>,
+    <ConfigProvider locale={zhCN}>
+        <App />
+    </ConfigProvider>,
 )
