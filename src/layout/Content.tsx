@@ -30,7 +30,7 @@ const ChatListContainer = styled(Box)(({ theme }) => ({
 const ChatContainer = styled(Box)(({ theme }) => ({
     height: '90vh',
     width: '100%',
-    backgroundColor: '#424242',
+    backgroundColor: '#222034',
     // padding: theme.spacing(1, 1, 1, 0),
 }))
 

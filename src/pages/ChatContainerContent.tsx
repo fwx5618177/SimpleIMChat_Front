@@ -1,8 +1,20 @@
-import { Stack, Box, Divider } from '@mui/material'
+import { Stack, Box, Divider, List, ListItem, ListItemAvatar, Avatar, ListItemText } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { styled, alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import GroupIcon from '@mui/icons-material/Group'
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import IconButton from '@mui/material/IconButton'
+
+import FormatBoldIcon from '@mui/icons-material/FormatBold'
+import FormatItalicIcon from '@mui/icons-material/FormatItalic'
+import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined'
+import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+
 import content from '../mock/chatContent.json'
 
 interface ChatContainerProps {
@@ -54,6 +66,9 @@ const EditeContainer = styled(Box)(({ theme }) => ({
 const Group = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: 25,
+    borderColor: '#c7c1c1',
+    borderWidth: 1,
+    backdropFilter: 'blur(2px) brightness(60%)',
     backgroundColor: alpha(theme.palette.common.white, 0.15),
     '&:hover': {
         backgroundColor: alpha(theme.palette.common.white, 0.25),
@@ -73,10 +88,51 @@ const GroupIconWrap = styled('div')(({ theme }) => ({
     justifyContent: 'center',
 }))
 
+const ChatWordContainer = styled(Box)(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.3),
+    padding: theme.spacing(0, 1.5, 0, 2),
+    color: 'white',
+    minHeight: 60,
+    height: 'atuo',
+    wordBreak: 'break-word',
+    overflowWrap: 'normal',
+    letterSpacing: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    cursor: 'pointer',
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+}))
+
+const ChatOpsPlugins = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    borderColor: '#6b6767',
+    borderWidth: 1,
+    backdropFilter: 'blur(2px) brightness(60%)',
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    margin: theme.spacing(3, 1.5, 0, 0),
+    width: 100,
+    height: 40,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+}))
+
 export default ({ chatId }: ChatContainerProps) => {
     const [contentHistory, setContentHistory] = useState<any>(null)
     const [chatLists, setChatLists] = useState<any[]>([])
     const [chatHeader, setChatHeader] = useState<string>('')
+    const [formats, setFormats] = React.useState(() => ['bold', 'italic'])
+
+    const handleFormat = (event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
+        setFormats(newFormats)
+    }
 
     const queryHistory = async () => {
         const result = content?.filter(ci => ci?.chatId === chatId)
@@ -88,6 +144,7 @@ export default ({ chatId }: ChatContainerProps) => {
 
             setContentHistory(data)
             setChatHeader(data?.chatName)
+            setChatLists(data?.content)
         } else {
             setContentHistory([])
             setChatHeader('')
@@ -107,22 +164,24 @@ export default ({ chatId }: ChatContainerProps) => {
                             <Typography variant='h5' noWrap component='div' sx={{ display: { xs: 'none', sm: 'block' } }}>
                                 {chatHeader}
                             </Typography>
-                            <Group>
-                                <GroupIconWrap>
-                                    <GroupIcon />
-                                    <Typography
-                                        variant='h6'
-                                        noWrap
-                                        component='div'
-                                        sx={{
-                                            display: { xs: 'none', sm: 'block' },
-                                            marginLeft: 2,
-                                        }}
-                                    >
-                                        {contentHistory?.joiner?.members}
-                                    </Typography>
-                                </GroupIconWrap>
-                            </Group>
+                            {chatHeader ? (
+                                <Group>
+                                    <GroupIconWrap>
+                                        <GroupIcon />
+                                        <Typography
+                                            variant='h6'
+                                            noWrap
+                                            component='div'
+                                            sx={{
+                                                display: { xs: 'none', sm: 'block' },
+                                                marginLeft: 2,
+                                            }}
+                                        >
+                                            {contentHistory?.joiner?.members}
+                                        </Typography>
+                                    </GroupIconWrap>
+                                </Group>
+                            ) : null}
                         </Stack>
                     </ChatHeader>
                     <Divider
@@ -132,7 +191,52 @@ export default ({ chatId }: ChatContainerProps) => {
                         variant='middle'
                         flexItem
                     />
-                    <ChatContentBox>{chatId}</ChatContentBox>
+                    <ChatContentBox>
+                        <List>
+                            <Stack direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
+                                <ListItem
+                                    sx={{
+                                        width: '55%',
+                                    }}
+                                >
+                                    <ListItemAvatar>
+                                        <Avatar alt='Devon' src='xxx' />
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={
+                                            <Stack direction={'row'} justifyContent={'flex-start'}>
+                                                <Typography variant='subtitle1' noWrap component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                                    Devon Lane
+                                                </Typography>
+
+                                                <Typography variant='subtitle1' noWrap component='div' sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 5, color: '#bdb8b8' }}>
+                                                    20:34
+                                                </Typography>
+                                            </Stack>
+                                        }
+                                        secondary={
+                                            <ChatWordContainer>
+                                                <Stack direction={'row'} justifyContent={'flex-start'}>
+                                                    <Typography variant='subtitle1' component={'div'} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                                        Checkout
+                                                    </Typography>
+                                                </Stack>
+                                            </ChatWordContainer>
+                                        }
+                                    />
+                                </ListItem>
+
+                                <ChatOpsPlugins>
+                                    <IconButton size='small' edge='start' color='inherit' aria-label='open drawer'>
+                                        <FormatQuoteIcon />
+                                    </IconButton>
+                                    <IconButton size='small' edge='start' color='inherit' aria-label='open drawer'>
+                                        <DeleteForeverIcon />
+                                    </IconButton>
+                                </ChatOpsPlugins>
+                            </Stack>
+                        </List>
+                    </ChatContentBox>
 
                     <Divider
                         style={{
@@ -142,7 +246,27 @@ export default ({ chatId }: ChatContainerProps) => {
                         flexItem
                     />
 
-                    <EditeContainer>{chatId}</EditeContainer>
+                    <EditeContainer>
+                        <Stack direction={'column'}>
+                            <ToggleButtonGroup value={formats} onChange={handleFormat} aria-label='text formatting'>
+                                <ToggleButton value='bold' aria-label='bold'>
+                                    <FormatBoldIcon />
+                                </ToggleButton>
+                                <ToggleButton value='italic' aria-label='italic'>
+                                    <FormatItalicIcon />
+                                </ToggleButton>
+                                <ToggleButton value='underlined' aria-label='underlined'>
+                                    <FormatUnderlinedIcon />
+                                </ToggleButton>
+                                <ToggleButton value='color' aria-label='color' disabled>
+                                    <FormatColorFillIcon />
+                                    <ArrowDropDownIcon />
+                                </ToggleButton>
+                            </ToggleButtonGroup>
+
+                            <div>1</div>
+                        </Stack>
+                    </EditeContainer>
                 </Stack>
             )}
         </>
