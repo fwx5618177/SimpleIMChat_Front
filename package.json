@@ -55,6 +55,7 @@
     "jest-environment-node": "^29.3.1",
     "lib-flexible": "^0.3.2",
     "lint-staged": "^13.0.4",
+    "moment": "^2.29.4",
     "postcss": "^8.4.19",
     "postcss-pxtorem": "^6.0.0",
     "prettier": "^2.8.0",

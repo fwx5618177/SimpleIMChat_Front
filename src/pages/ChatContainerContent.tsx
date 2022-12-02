@@ -10,11 +10,14 @@ import { TransitionProps } from '@mui/material/transitions'
 import FormatBoldIcon from '@mui/icons-material/FormatBold'
 import FormatItalicIcon from '@mui/icons-material/FormatItalic'
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined'
-import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import CloseIcon from '@mui/icons-material/Close'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft'
+import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter'
+import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight'
 import Slide from '@mui/material/Slide'
+import moment from 'moment'
 import content from '../mock/chatContent.json'
 
 interface ChatContainerProps {
@@ -210,6 +213,13 @@ const ReplyFont = styled('div')(() => ({
     textOverflow: 'ellipsis',
 }))
 
+const EditeReplyMention = styled('div')(({ theme }) => ({
+    position: 'absolute',
+    top: '60%',
+    left: '2%',
+    padding: theme.spacing(0, 1.5, 0, 2),
+}))
+
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
         children: React.ReactElement<any, any>
@@ -225,18 +235,22 @@ export default ({ chatId }: ChatContainerProps) => {
     const [chatLists, setChatLists] = useState<any[]>([])
     const [chatHeader, setChatHeader] = useState<string>('')
     const [openDialog, setOpenDialog] = React.useState(false)
+    const [replyMentionId, setReplyMentionId] = React.useState<number>(0)
+    const [deleteSendId, setDeleteSendId] = React.useState<number>(0)
     const [formats, setFormats] = React.useState(() => ['bold', 'italic'])
 
     const handleFormat = (_event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
         setFormats(newFormats)
     }
 
-    const handleDelete = () => {
+    const handleDelete = (sendId: number) => {
+        setDeleteSendId(sendId)
         setOpenDialog(true)
     }
 
-    const handleQuote = (...args) => {
-        console.log('quote:', args)
+    const handleQuote = (mentionId: number) => {
+        console.log('quote:', mentionId)
+        setReplyMentionId(mentionId)
     }
 
     const handleClose = () => {
@@ -258,6 +272,52 @@ export default ({ chatId }: ChatContainerProps) => {
             setContentHistory([])
             setChatHeader('')
         }
+    }
+
+    // const ReplyFragment = (data: any, mentionId: number) => {
+    //     const result = data?.find(vi => vi?.sendId === mentionId)?.content
+    //     return (
+    //         <ReplyMention>
+    //             <ReplyMark />
+    //             <ReplyFont>{result}</ReplyFont>
+    //         </ReplyMention>
+    //     )
+    // }
+
+    const handleDeleteClose = () => {
+        const newLists = chatLists?.filter(ci => ci?.sendId !== deleteSendId)
+
+        handleClose()
+        setChatLists(newLists)
+    }
+
+    const handleSubmit = (_event: React.KeyboardEvent, replyMentionId: number) => {
+        // console.log(_event?.keyCode, _event?.ctrlKey)
+        // macos: control + Enter to submit infos
+        const ctrlKey = _event?.ctrlKey
+        if (_event.keyCode !== 13 || !ctrlKey) return
+        // console.log(_event)
+        const target: HTMLElement = _event.target as HTMLElement
+
+        const sendTime = moment().format('HH:mm')
+        const metionId = replyMentionId || 0
+        const content = target.innerHTML
+        const name = currentRoleName
+        const sendId = 12105
+
+        const sendData = {
+            sendId,
+            name,
+            sendTime,
+            content,
+            reply: {
+                metionId,
+            },
+        }
+
+        setChatLists([...chatLists, sendData])
+
+        // console.log(target.innerHTML, sendTime)
     }
 
     useEffect(() => {
@@ -305,7 +365,21 @@ export default ({ chatId }: ChatContainerProps) => {
                             {chatLists?.map((ci, index) => (
                                 <>
                                     {ci?.name === currentRoleName ? (
-                                        <Stack key={index} direction={'row-reverse'} justifyContent={'flex-start'} alignItems={'center'}>
+                                        <Stack
+                                            onMouseEnter={_e => {
+                                                const plugins: HTMLElement = document.getElementById(`plugins_${ci?.reply?.mentionId}`) as HTMLElement
+                                                plugins.style.visibility = 'visible'
+                                            }}
+                                            onMouseLeave={_e => {
+                                                const plugins: HTMLElement = document.getElementById(`plugins_${ci?.reply?.mentionId}`) as HTMLElement
+
+                                                plugins.style.visibility = 'hidden'
+                                            }}
+                                            key={index}
+                                            direction={'row-reverse'}
+                                            justifyContent={'flex-start'}
+                                            alignItems={'center'}
+                                        >
                                             <ListItem
                                                 sx={{
                                                     width: '55%',
@@ -350,17 +424,36 @@ export default ({ chatId }: ChatContainerProps) => {
                                                 </ListItemAvatar>
                                             </ListItem>
 
-                                            <ChatOpsPlugins>
+                                            <ChatOpsPlugins
+                                                style={{
+                                                    visibility: 'hidden',
+                                                }}
+                                                id={`plugins_${ci?.reply?.mentionId}`}
+                                            >
                                                 <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={_e => handleQuote(ci?.sendId)}>
                                                     <FormatQuoteIcon />
                                                 </IconButton>
-                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={handleDelete}>
+                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={() => handleDelete(ci?.sendId)}>
                                                     <DeleteForeverIcon />
                                                 </IconButton>
                                             </ChatOpsPlugins>
                                         </Stack>
                                     ) : (
-                                        <Stack key={index} direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
+                                        <Stack
+                                            key={index}
+                                            direction={'row'}
+                                            justifyContent={'flex-start'}
+                                            alignItems={'center'}
+                                            onMouseEnter={_e => {
+                                                const plugins: HTMLElement = document.getElementById(`plugins_${ci?.reply?.mentionId}`) as HTMLElement
+                                                plugins.style.visibility = 'visible'
+                                            }}
+                                            onMouseLeave={_e => {
+                                                const plugins: HTMLElement = document.getElementById(`plugins_${ci?.reply?.mentionId}`) as HTMLElement
+
+                                                plugins.style.visibility = 'hidden'
+                                            }}
+                                        >
                                             <ListItem
                                                 sx={{
                                                     width: '55%',
@@ -401,11 +494,16 @@ export default ({ chatId }: ChatContainerProps) => {
                                                 />
                                             </ListItem>
 
-                                            <ChatOpsPlugins>
+                                            <ChatOpsPlugins
+                                                style={{
+                                                    visibility: 'hidden',
+                                                }}
+                                                id={`plugins_${ci?.reply?.mentionId}`}
+                                            >
                                                 <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={_e => handleQuote(ci?.sendId)}>
                                                     <FormatQuoteIcon />
                                                 </IconButton>
-                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={handleDelete}>
+                                                <IconButton size='small' edge='start' color='inherit' aria-label='open drawer' onClick={_e => handleDelete(ci?.sendId)}>
                                                     <DeleteForeverIcon />
                                                 </IconButton>
                                             </ChatOpsPlugins>
@@ -436,23 +534,55 @@ export default ({ chatId }: ChatContainerProps) => {
                                 <ToggleButton value='underlined' aria-label='underlined'>
                                     <FormatUnderlinedIcon />
                                 </ToggleButton>
-
-                                <ToggleButton value='color' aria-label='color'>
-                                    <FormatColorFillIcon />
-                                    <ArrowDropDownIcon />
+                                <ToggleButton value='formatAlignLeftIcon' aria-label='formatAlignLeftIcon'>
+                                    <FormatAlignLeftIcon />
+                                </ToggleButton>
+                                <ToggleButton value='FormatAlignCenterIcon' aria-label='FormatAlignCenterIcon'>
+                                    <FormatAlignCenterIcon />
+                                </ToggleButton>
+                                <ToggleButton value='FormatAlignRightIcon' aria-label='FormatAlignRightIcon'>
+                                    <FormatAlignRightIcon />
                                 </ToggleButton>
                             </ToggleButtonGroup>
 
-                            <EditeText contentEditable />
+                            <EditeText contentEditable onKeyDown={e => handleSubmit(e, replyMentionId)} />
+                            {!!replyMentionId ? (
+                                <EditeReplyMention>
+                                    <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
+                                        <ReplyMention>
+                                            <ReplyMark />
+                                            <ReplyFont>{chatLists?.find(vi => vi?.sendId === replyMentionId)?.content}</ReplyFont>
+                                        </ReplyMention>
+                                        <IconButton
+                                            style={{
+                                                borderRadius: '50px',
+                                                background: '#C9C7D0',
+                                                opacity: 0.5,
+                                                marginLeft: 10,
+                                            }}
+                                            size='small'
+                                            edge='start'
+                                            color='inherit'
+                                            aria-label='open drawer'
+                                            onClick={() => {
+                                                setReplyMentionId(0)
+                                            }}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </Stack>
+                                </EditeReplyMention>
+                            ) : null}
                         </Stack>
                     </EditeContainer>
+
                     <Dialog open={openDialog} TransitionComponent={Transition} keepMounted onClose={handleClose} aria-describedby='alert-dialog-slide-description'>
                         <DialogTitle>{'Do you want to delete it?'}</DialogTitle>
                         <DialogActions>
                             <Button color='success' onClick={handleClose}>
                                 Disagree
                             </Button>
-                            <Button color='error' onClick={handleClose}>
+                            <Button color='error' onClick={handleDeleteClose}>
                                 Agree
                             </Button>
                         </DialogActions>
