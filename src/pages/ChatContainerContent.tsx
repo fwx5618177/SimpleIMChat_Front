@@ -1,5 +1,5 @@
 import { Stack, Box, Divider, List, ListItem, ListItemAvatar, Avatar, ListItemText, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { styled, alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import GroupIcon from '@mui/icons-material/Group'
@@ -18,7 +18,9 @@ import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter'
 import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight'
 import Slide from '@mui/material/Slide'
 import moment from 'moment'
+import random from 'random-number'
 import content from '../mock/chatContent.json'
+import Auth from '../hooks/auth/Auth'
 
 interface ChatContainerProps {
     chatId: number
@@ -47,6 +49,7 @@ const ChatContentBox = styled(Box)(({ theme }) => ({
     paddingLeft: 10,
     width: '100%',
     height: '70vh',
+    overflow: 'scroll',
     [theme.breakpoints.up('sm')]: {
         marginLeft: 0,
         width: '100%',
@@ -230,7 +233,8 @@ const Transition = React.forwardRef(function Transition(
 })
 
 export default ({ chatId }: ChatContainerProps) => {
-    const [currentRoleName, setCurrentRoleName] = useState<string>('Jenny White')
+    // const [currentRoleName, setCurrentRoleName] = useState<string>('Jenny White')
+    const { queryAuth: currentRoleName } = useContext(Auth)
     const [contentHistory, setContentHistory] = useState<any>(null)
     const [chatLists, setChatLists] = useState<any[]>([])
     const [chatHeader, setChatHeader] = useState<string>('')
@@ -271,6 +275,7 @@ export default ({ chatId }: ChatContainerProps) => {
         } else {
             setContentHistory([])
             setChatHeader('')
+            setChatLists([])
         }
     }
 
@@ -300,10 +305,14 @@ export default ({ chatId }: ChatContainerProps) => {
         const target: HTMLElement = _event.target as HTMLElement
 
         const sendTime = moment().format('HH:mm')
-        const metionId = replyMentionId || 0
+        const mentionId = replyMentionId || 0
         const content = target.innerHTML
         const name = currentRoleName
-        const sendId = 12105
+        const sendId = random({
+            min: 12103,
+            max: 9999999,
+            integer: true,
+        })
 
         const sendData = {
             sendId,
@@ -311,11 +320,16 @@ export default ({ chatId }: ChatContainerProps) => {
             sendTime,
             content,
             reply: {
-                metionId,
+                mentionId,
             },
         }
 
+        target.innerHTML = ''
+
+        console.log(sendData)
+
         setChatLists([...chatLists, sendData])
+        setReplyMentionId(0)
 
         // console.log(target.innerHTML, sendTime)
     }
