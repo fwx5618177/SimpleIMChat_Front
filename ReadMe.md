@@ -1,5 +1,7 @@
 # React Vite多平台基础脚手架
 
+![pic](./static/result.png)
+
 ## 1. 移动端
 即可看到移动端的效果
 1. 打开`.postcssrc.js`的所有注释
