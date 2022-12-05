@@ -15,6 +15,18 @@ export default defineConfig({
     },
     server: {
         hmr: true,
+        https: false,
+        // proxy: {
+        //     '/socket': {
+        //         target: 'ws://localhost:3000',
+        //         ws: true,
+        //         secure: false,
+        //         changeOrigin: true,
+        //     },
+        // },
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        },
     },
 
     css: {

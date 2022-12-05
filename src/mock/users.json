@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "name": "Devon Lane",
+        "position": "CTO@Apple",
+        "pic": "xxx",
+        "createdTime": "20:30",
+        "lastTime": "20:34",
+        "status": true,
+        "unreadMsg": 10
+    },
+    {
+        "id": 2,
+        "name": "Jenny White",
+        "position": "CTO@Apple",
+        "pic": "xxx",
+        "createdTime": "20:30",
+        "lastTime": "20:34",
+        "status": true,
+        "unreadMsg": 10
+    },
+    {
+        "id": 3,
+        "name": "Darrell Steward",
+        "position": "CTO@Apple",
+        "pic": "xxx",
+        "createdTime": "20:30",
+        "lastTime": "20:34",
+        "status": true,
+        "unreadMsg": 10
+    }
+]

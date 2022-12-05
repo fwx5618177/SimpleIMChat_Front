@@ -1,5 +1,5 @@
 import { Stack, Box, Divider, List, ListItem, ListItemAvatar, Avatar, ListItemText, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { FormEventHandler, useContext, useEffect, useState } from 'react'
 import { styled, alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import GroupIcon from '@mui/icons-material/Group'
@@ -21,9 +21,19 @@ import moment from 'moment'
 import random from 'random-number'
 import content from '../mock/chatContent.json'
 import Auth from '../hooks/auth/Auth'
+import WSConnect from '../common/WSConnect'
+import users from '../mock/users.json'
+import { Socket } from 'socket.io-client'
 
 interface ChatContainerProps {
     chatId: number
+}
+
+interface UsersInfo {
+    name: string
+    pic: string
+    position: string
+    status: boolean
 }
 
 const ChatHeader = styled(Box)(({ theme }) => ({
@@ -223,6 +233,24 @@ const EditeReplyMention = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 1.5, 0, 2),
 }))
 
+const SpecialMentioned = styled('div')(({ theme }) => ({
+    width: 300,
+    height: 100,
+    position: 'absolute',
+    top: -120,
+    left: 20,
+    padding: theme.spacing(0, 1.5, 0, 2),
+    background: '#35343E',
+    borderRadius: 6,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    cursor: 'pointer',
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+}))
+
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
         children: React.ReactElement<any, any>
@@ -242,6 +270,11 @@ export default ({ chatId }: ChatContainerProps) => {
     const [replyMentionId, setReplyMentionId] = React.useState<number>(0)
     const [deleteSendId, setDeleteSendId] = React.useState<number>(0)
     const [formats, setFormats] = React.useState(() => ['bold', 'italic'])
+    const [mentionedStatus, setMentionedStatus] = useState<boolean>(false)
+    const [userInfos, setUserInfos] = useState<UsersInfo[]>([])
+    const [mentionedSpecial, setMentionedSpecial] = useState<UsersInfo[]>([])
+
+    const wsInfo: Socket<any, any> = WSConnect() as Socket
 
     const handleFormat = (_event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
         setFormats(newFormats)
@@ -259,6 +292,25 @@ export default ({ chatId }: ChatContainerProps) => {
 
     const handleClose = () => {
         setOpenDialog(false)
+    }
+
+    const queryUserInfos = async () => {
+        const data = await users
+
+        console.log('users data:', data)
+
+        if (data && Array.isArray(data) && data.length > 0) {
+            const result: UsersInfo[] = data?.map(ci => ({
+                name: ci?.name,
+                position: ci?.position,
+                pic: ci?.pic,
+                status: ci?.status,
+            }))
+
+            setUserInfos(result)
+        } else {
+            setUserInfos([])
+        }
     }
 
     const queryHistory = async () => {
@@ -296,6 +348,47 @@ export default ({ chatId }: ChatContainerProps) => {
         setChatLists(newLists)
     }
 
+    const handleInput = (_event: any) => {
+        const target = (_event as React.KeyboardEvent)?.target as HTMLDivElement
+        const type = (_event as React.KeyboardEvent)?.type
+        const deleteContentBackward = ((_event as React.KeyboardEvent)?.nativeEvent as any)?.inputType
+
+        if (type !== 'input') return
+        const inputValue = target.innerText
+
+        const extractMentioned = inputValue.match(/\@\S(.+)[\s]?/g)
+
+        if (!extractMentioned) {
+            if (deleteContentBackward === 'deleteContentBackward') {
+                setMentionedSpecial([])
+                setMentionedStatus(false)
+            }
+
+            return
+        }
+        // userInfos
+        const name = extractMentioned[0]?.split(' ')[0]?.replace('@', '')
+
+        const result = userInfos?.find(ci => ci?.name?.includes(name))
+
+        console.log(
+            'change:',
+            // _event, type,
+            target.innerText,
+            name,
+            result,
+            deleteContentBackward,
+        )
+
+        if (!!result) {
+            setMentionedSpecial([result])
+            setMentionedStatus(true)
+        } else {
+            setMentionedSpecial([])
+            setMentionedStatus(false)
+        }
+    }
+
     const handleSubmit = (_event: React.KeyboardEvent, replyMentionId: number) => {
         // console.log(_event?.keyCode, _event?.ctrlKey)
         // macos: control + Enter to submit infos
@@ -303,6 +396,8 @@ export default ({ chatId }: ChatContainerProps) => {
         if (_event.keyCode !== 13 || !ctrlKey) return
         // console.log(_event)
         const target: HTMLElement = _event.target as HTMLElement
+
+        if (!target.innerHTML) return
 
         const sendTime = moment().format('HH:mm')
         const mentionId = replyMentionId || 0
@@ -328,6 +423,16 @@ export default ({ chatId }: ChatContainerProps) => {
 
         console.log(sendData)
 
+        wsInfo.emit(
+            'hi',
+            JSON.stringify({
+                msg: sendData,
+            }),
+            res => {
+                console.log('res!!!:', res)
+            },
+        )
+
         setChatLists([...chatLists, sendData])
         setReplyMentionId(0)
 
@@ -336,6 +441,7 @@ export default ({ chatId }: ChatContainerProps) => {
 
     useEffect(() => {
         queryHistory()
+        queryUserInfos()
     }, [chatId])
 
     return (
@@ -559,7 +665,7 @@ export default ({ chatId }: ChatContainerProps) => {
                                 </ToggleButton>
                             </ToggleButtonGroup>
 
-                            <EditeText contentEditable onKeyDown={e => handleSubmit(e, replyMentionId)} />
+                            <EditeText onInput={handleInput} contentEditable onKeyDown={e => handleSubmit(e, replyMentionId)} />
                             {!!replyMentionId ? (
                                 <EditeReplyMention>
                                     <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
@@ -587,6 +693,23 @@ export default ({ chatId }: ChatContainerProps) => {
                                     </Stack>
                                 </EditeReplyMention>
                             ) : null}
+
+                            {mentionedStatus && (
+                                <SpecialMentioned>
+                                    <List>
+                                        <Stack direction={'row'} justifyContent={'center'}>
+                                            {mentionedSpecial?.map((ci, index) => (
+                                                <ListItem key={'_mentionedSpecial' + index}>
+                                                    <ListItemAvatar>
+                                                        <Avatar alt={ci?.name} src={ci?.pic} />
+                                                    </ListItemAvatar>
+                                                    <ListItemText primary={ci?.name} secondary={ci?.position}></ListItemText>
+                                                </ListItem>
+                                            ))}
+                                        </Stack>
+                                    </List>
+                                </SpecialMentioned>
+                            )}
                         </Stack>
                     </EditeContainer>
 

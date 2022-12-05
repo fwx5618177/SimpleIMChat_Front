@@ -1,11 +1,23 @@
-import React, { useEffect } from 'react'
-
+import { useState, useEffect } from 'react'
+import { io, Socket } from 'socket.io-client'
 const WSConnect = () => {
-    // useEffect(() => {
-    //     const ws = new WebSocket('ws://localhost:7070')
-    // }, [])
+    const [wsInfo, setWsInfo] = useState<Socket<any, any> | null>(null)
 
-    return `test` + Date.now()
+    useEffect(() => {
+        const ws: Socket<any, any> = io('http://localhost:7000', {
+            reconnection: true,
+            reconnectionAttempts: 30,
+            reconnectionDelay: 1000,
+            timeout: 5000,
+            auth: {
+                token: window.sessionStorage.getItem('token') || 'fwx',
+            },
+        })
+
+        setWsInfo(ws)
+    }, [])
+
+    return wsInfo
 }
 
 export default WSConnect
